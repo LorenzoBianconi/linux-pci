@@ -30,6 +30,8 @@ config PCI_PWRCTRL_TC9563
 	default m if ARCH_QCOM
 	depends on I2C
 	select REGMAP_I2C
+	select AUXILIARY_BUS
+	select GPIO_TC9563
 	help
 	  Say Y here to enable the PCI Power Control driver of TC9563 PCIe
 	  switch.
