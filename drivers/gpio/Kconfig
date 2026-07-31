@@ -1806,6 +1806,15 @@ config GPIO_LTC4283
 	  This driver can also be built as a module. If so, the module will
 	  be called gpio-ltc4283.
 
+config GPIO_TC9563
+	tristate "Toshiba TC9563 GPIO support"
+	select GPIO_REGMAP
+	help
+	  This enables support for the GPIO controller embedded in the Toshiba
+	  TC9563 (and Qualcomm QPS615).  This device connects to the host
+	  via PCIe port, which is the upstream port on an internal PCIe
+	  switch.
+
 endmenu
 
 menu "PCI GPIO expanders"
