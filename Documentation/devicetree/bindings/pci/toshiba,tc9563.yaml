@@ -54,6 +54,23 @@ properties:
           - description: I2C slave address
 
 patternProperties:
+  "^gpio(@[0-9a-f]+)?$":
+    description:
+      child node describing the embedded GPIO controller. The controller is
+      registered as an auxiliary device by the TC9563 power controller and
+      accessed through the i2c device.
+    type: object
+    additionalProperties: false
+    properties:
+      gpio-controller: true
+
+      "#gpio-cells":
+        const: 2
+
+    required:
+      - gpio-controller
+      - "#gpio-cells"
+
   "^pcie@[1-2],0$":
     description:
       child nodes describing the internal downstream ports of
@@ -62,6 +79,12 @@ patternProperties:
     allOf:
       - $ref: "#/$defs/tc9563-node"
       - $ref: /schemas/pci/pci-pci-bridge.yaml#
+    properties:
+      reset-gpios:
+        maxItems: 1
+        description:
+          GPIO controlling the PERST# reset of the downstream port. If not
+          present, the port reset is handled through the TC9563 registers.
     unevaluatedProperties: false
 
   "^pcie@[3],0$":
@@ -149,6 +172,11 @@ examples:
 
                 resx-gpios = <&gpio 1 GPIO_ACTIVE_LOW>;
 
+                tc9563_gpio: gpio {
+                    gpio-controller;
+                    #gpio-cells = <2>;
+                };
+
                 pcie@1,0 {
                     compatible = "pciclass,0604";
                     reg = <0x20800 0x0 0x0 0x0 0x0>;
@@ -157,6 +185,8 @@ examples:
                     device_type = "pci";
                     ranges;
                     bus-range = <0x03 0xff>;
+
+                    reset-gpios = <&tc9563_gpio 2 GPIO_ACTIVE_LOW>;
 
                     toshiba,no-dfe-support;
                 };
@@ -169,6 +199,8 @@ examples:
                     device_type = "pci";
                     ranges;
                     bus-range = <0x04 0xff>;
+
+                    reset-gpios = <&tc9563_gpio 3 GPIO_ACTIVE_LOW>;
 
                     toshiba,tx-amplitude-microvolt = <10>;
                 };
